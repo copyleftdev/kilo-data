@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kilocheck.dev/schemas/source-records.v1.json",
+  "title": "KiloCheck source-native parsed record",
+  "type": "object",
+  "required": ["source_id", "record_index", "raw_record", "raw_record_hash"],
+  "properties": {
+    "source_id": { "type": "string" },
+    "record_index": { "type": "integer", "minimum": 0 },
+    "collection": { "type": ["string", "null"] },
+    "raw_record": { "type": "string" },
+    "raw_record_hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,53 @@
+name: Publish daily base dataset
+
+on:
+  schedule:
+    - cron: "37 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: data-base-release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: cargo-data-${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
+      - name: Fetch complete base inputs
+        run: ./scripts/fetch-base.sh
+      - name: Compile and validate
+        run: |
+          ./scripts/verify-release-inputs.sh
+          cargo build --locked --release -p kilo-data
+          target/release/kilo-data refresh-catalog
+          target/release/kilo-data compile-canonical
+          target/release/kilo-data validate-canonical
+      - name: Package release
+        run: |
+          cp ATTRIBUTION.md dataset/canonical/
+          cp dataset/canonical/manifest.json base-manifest.json
+          tar -czf kilocheck-data-base.tar.gz -C dataset canonical
+          sha256sum kilocheck-data-base.tar.gz > kilocheck-data-base.tar.gz.sha256
+      - name: Publish immutable release only when content changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          new_id=$(jq -r .snapshot_id base-manifest.json)
+          mkdir -p previous
+          gh release download -p base-manifest.json -D previous >/dev/null 2>&1 || true
+          old_id=$(jq -r .snapshot_id previous/base-manifest.json 2>/dev/null || true)
+          if [ "$new_id" = "$old_id" ]; then exit 0; fi
+          tag="data-$(date -u +%Y%m%d)"
+          gh release view "$tag" >/dev/null 2>&1 || gh release create "$tag" --title "KiloCheck data $(date -u +%Y-%m-%d)" --latest --notes "Deterministic daily base dataset. See manifest.json and ATTRIBUTION.md in the archive."
+          gh release upload "$tag" kilocheck-data-base.tar.gz kilocheck-data-base.tar.gz.sha256 base-manifest.json --clobber

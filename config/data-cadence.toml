@@ -1,0 +1,72 @@
+schema = "kilo.data-cadence.v1"
+
+[channels.base]
+schedule_utc = "37 5 * * *"
+release_kind = "immutable"
+maximum_release_age = "36h"
+
+[channels.edge]
+schedule_utc = "7,22,37,52 * * * *"
+release_kind = "rolling"
+maximum_release_age = "45m"
+
+[[source_policy]]
+source_id = "feodo-c2"
+channel = "edge"
+upstream_cadence = "5m"
+target_cadence = "15m"
+maximum_age = "45m"
+
+[[source_policy]]
+source_id = "tor-exits"
+channel = "edge"
+upstream_cadence = "continuous"
+target_cadence = "15m"
+maximum_age = "45m"
+
+[[source_policy]]
+source_id = "spamhaus-drop-family"
+channel = "base"
+upstream_cadence = "daily"
+target_cadence = "daily"
+maximum_age = "48h"
+
+[[source_policy]]
+source_id = "rir-delegation-family"
+channel = "base"
+upstream_cadence = "daily"
+target_cadence = "daily"
+maximum_age = "48h"
+
+[[source_policy]]
+source_id = "ripe-ris-family"
+channel = "base"
+upstream_cadence = "daily"
+target_cadence = "daily"
+maximum_age = "48h"
+
+[[source_policy]]
+source_id = "provider-range-family"
+channel = "base"
+upstream_cadence = "change-driven"
+target_cadence = "daily"
+maximum_age = "7d"
+
+[[source_policy]]
+source_id = "iana-registry-family"
+channel = "base"
+upstream_cadence = "change-driven"
+target_cadence = "daily"
+maximum_age = "30d"
+
+[[source_policy]]
+source_id = "dshield-family"
+channel = "deferred"
+upstream_cadence = "hourly-and-daily"
+reason = "Public redistribution and commercial-use terms require resolution."
+
+[[source_policy]]
+source_id = "misp-warninglists"
+channel = "deferred"
+upstream_cadence = "repository-change"
+reason = "Derived upstream lineage and heterogeneous licensing require resolution."

@@ -1,0 +1,50 @@
+name: Publish rolling edge dataset
+
+on:
+  schedule:
+    - cron: "7,22,37,52 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: data-edge-release
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: cargo-data-${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
+      - name: Fetch fast-changing inputs
+        run: ./scripts/fetch-edge.sh
+      - name: Compile edge overlay
+        run: |
+          cargo build --locked --release -p kilo-data
+          target/release/kilo-data refresh-catalog
+          target/release/kilo-data compile-edge
+      - name: Package edge overlay
+        run: |
+          cp ATTRIBUTION.md dataset/edge/
+          tar -czf kilocheck-data-edge.tar.gz -C dataset edge
+          sha256sum kilocheck-data-edge.tar.gz > kilocheck-data-edge.tar.gz.sha256
+      - name: Publish only when content changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          new_id=$(jq -r .snapshot_id dataset/edge/manifest.json)
+          mkdir -p previous
+          gh release download data-edge -p edge-manifest.json -D previous >/dev/null 2>&1 || true
+          old_id=$(jq -r .snapshot_id previous/edge-manifest.json 2>/dev/null || true)
+          if [ "$new_id" = "$old_id" ]; then exit 0; fi
+          cp dataset/edge/manifest.json edge-manifest.json
+          gh release view data-edge >/dev/null 2>&1 || gh release create data-edge --title "KiloCheck rolling edge data" --prerelease --notes "Mutable rolling Feodo and Tor overlay. The manifest snapshot ID is immutable content identity."
+          gh release upload data-edge kilocheck-data-edge.tar.gz kilocheck-data-edge.tar.gz.sha256 edge-manifest.json --clobber

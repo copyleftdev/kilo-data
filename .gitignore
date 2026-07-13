@@ -1,0 +1,16 @@
+/target/
+*.tmp
+/reference-data/iana/
+/reference-data/rir/
+/reference-data/routing/
+/reference-data/threat/
+/reference-data/anonymity/
+/reference-data/infrastructure/
+/reference-data/collections/
+/reference-data/profiles.json
+/dataset/source_records.parquet
+/dataset/canonical/*.parquet
+/dataset/canonical/manifest.json
+/dataset/canonical/ATTRIBUTION.md
+/dataset/edge/
+/intent.md
