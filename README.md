@@ -1,9 +1,20 @@
 # Kilo Data
 
-Kilo Data is the deterministic public-data pipeline for KiloCheck. It retrieves
-complete bulk publications from original sources, validates and normalizes
-them, and publishes reproducible columnar release artifacts. It does not contain
-the future KiloCheck query CLI and never performs per-IP intelligence lookups.
+Kilo Data is the open, deterministic threat-intelligence and IP-reputation data
+pipeline for KiloCheck. It retrieves complete bulk publications from original
+sources, validates and normalizes them, and publishes reproducible Apache Arrow
+and Parquet release artifacts. It does not contain the future KiloCheck query
+CLI and never performs per-IP intelligence lookups.
+
+## Dataset coverage
+
+- Threat indicators and evidence from established blocklists and malware
+  infrastructure publications.
+- BGP route-origin data, Regional Internet Registry (RIR) allocations, and IANA
+  special-purpose address registries.
+- Cloud-provider, crawler, Tor-exit, and network-attribution context.
+- Normalized columnar tables designed for offline threat detection, security
+  screening, and IP intelligence tools.
 
 ## Current data workflow
 

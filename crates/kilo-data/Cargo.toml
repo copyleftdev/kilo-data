@@ -3,6 +3,10 @@ name = "kilo-data"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+description = "Deterministic threat-intelligence and IP-reputation data pipeline"
+repository = "https://github.com/copyleftdev/kilo-data"
+keywords = ["cybersecurity", "threat-intelligence", "ip-reputation", "parquet", "etl"]
+categories = ["command-line-utilities"]
 
 [[bin]]
 name = "kilo-data"
