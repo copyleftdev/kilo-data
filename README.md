@@ -13,8 +13,8 @@ CLI and never performs per-IP intelligence lookups.
 - BGP route-origin data, Regional Internet Registry (RIR) allocations, and IANA
   special-purpose address registries.
 - Cloud-provider, crawler, Tor-exit, and network-attribution context.
-- Normalized columnar tables designed for offline threat detection, security
-  screening, and IP intelligence tools.
+- Normalized columnar tables designed for offline phishing and malware
+  screening, threat detection, and IP intelligence tools.
 
 ## Current data workflow
 
