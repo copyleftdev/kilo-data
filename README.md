@@ -1,5 +1,7 @@
 # Kilo Data
 
+[![Tip my tokens](https://tokentip.to/badge/copyleftdev.svg?logo=1)](https://tokentip.to/@copyleftdev)
+
 Kilo Data is the open, deterministic threat-intelligence and IP-reputation data
 pipeline for KiloCheck. It retrieves complete bulk publications from original
 sources, validates and normalizes them, and publishes reproducible Apache Arrow
